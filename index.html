@@ -1,0 +1,66 @@
+<!-- script for spreed sheet -->
+var sheetName = 'Sheet1'
+		var scriptProp = PropertiesService.getScriptProperties()
+
+		function intialSetup () {
+		  var activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet()
+		  scriptProp.setProperty('key', activeSpreadsheet.getId())
+		}
+
+		function doPost (e) {
+		  var lock = LockService.getScriptLock()
+		  lock.tryLock(10000)
+
+		  try {
+			var doc = SpreadsheetApp.openById(scriptProp.getProperty('key'))
+			var sheet = doc.getSheetByName(sheetName)
+
+			var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+			var nextRow = sheet.getLastRow() + 1
+
+			var newRow = headers.map(function(header) {
+			  return header === 'timestamp' ? new Date() : e.parameter[header]
+			})
+
+			sheet.getRange(nextRow, 1, 1, newRow.length).setValues([newRow])
+
+			return ContentService
+			  .createTextOutput(JSON.stringify({ 'result': 'success', 'row': nextRow }))
+			  .setMimeType(ContentService.MimeType.JSON)
+		  }
+
+		  catch (e) {
+			return ContentService
+			  .createTextOutput(JSON.stringify({ 'result': 'error', 'error': e }))
+			  .setMimeType(ContentService.MimeType.JSON)
+		  }
+
+		  finally {
+			lock.releaseLock()
+		  }
+		}
+
+
+<!-- script for html site -->
+
+<script>
+	const scriptURL = 'https://script.google.com/macros/s/AKfycbxEu8dPtSznFhoQRH23nEFjzQfRFJL6AI3fLixXoNxCk5HBBZfn/exec'
+	// link of deploy sheet
+            const form = document.forms['rishabh']
+
+          // <form method="post" name="rishabh">
+            form.addEventListener('submit', e => {
+              e.preventDefault()
+              fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+                .then(response => alert("Thanks for Contacting us..! We Will Contact You Soon..."))
+                .catch(error => console.error('Error!', error.message))
+            }
+</script>
+
+
+<!-- method -->
+first create for than add name to each input 
+than go to spreed sheet add those name in horizontal
+than go to tools and script editor than paste 1st script after that save this file and upper corner ther is rename thant rename code editor same as name of your style sheet thant go to deploy than ney deploy than add any name than slect anyone than save than you get link than copy link and past on second script
+
+<!-- method -->
